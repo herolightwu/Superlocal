@@ -26,7 +26,7 @@ import './tasks';
 
 // https://hardhat.org/config/
 const accounts = {
-  mnemonic: process.env.DEPLOYER_MNEMONIC || 'test test test test test test test test test test test junk',
+  mnemonic: process.env.MNEMONIC || 'test test test test test test test test test test test junk',
   // accountsBalance: "990000000000000000000",
 };
 
@@ -73,11 +73,11 @@ module.exports = {
       url: `https://eth-rinkeby.alchemyapi.io/v2/${process.env.ALCHEMY_API_KEY}`,
       accounts,
       chainId: 4,
-      live: true,
-      saveDeployments: true,
-      tags: ['staging'],
-      gasPrice: 5000000000,
-      gasMultiplier: 2,
+      // live: true,
+      // saveDeployments: true,
+      // tags: ['staging'],
+      // gasPrice: 5000000000,
+      // gasMultiplier: 2,
     },
   },
   watcher: {

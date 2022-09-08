@@ -34,7 +34,7 @@ contract Local is Context, IERC20, Ownable {
 
     uint256 public constant _maxTotal = 500000000 * 10**6 * 10**9;
     uint256 public constant PRICE = 0.0001 ether;
-    uint256 public _maxTxAmount = 200 * 10**9;  //max amount per one transaction
+    uint256 public _maxTxAmount = 200 * 10**9;          //max amount per one transaction
 
     /**
      * @dev
@@ -72,7 +72,6 @@ contract Local is Context, IERC20, Ownable {
     }
 
     constructor() {
-        // _rOwned[_msgSender()] = _rTotal;
         _isExcludedFromFee[owner()] = true;
         _isExcludedFromFee[address(this)] = true;        
     }
@@ -230,8 +229,6 @@ contract Local is Context, IERC20, Ownable {
     }
 
     function tokenFromReflection(uint256 rAmount) public view returns (uint256) {
-        // console.log("rAmount", rAmount);
-        // console.log("_rTotal", _rTotal);
         require(_tTotal > 0, "Token balance is 0");
         require(rAmount <= _rTotal, "Amount must be less than total reflections");
         uint256 currentRate = _getRate();

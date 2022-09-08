@@ -1,7 +1,5 @@
 // SPDX-License-Identifier: ISC
 
-
-
 pragma solidity ^0.8.1;
 
 import "@openzeppelin/contracts/utils/Counters.sol";
@@ -21,12 +19,12 @@ contract StampNFT is ERC721Enumerable, Ownable {
 
     uint256 private constant MAX = ~uint256(0);     // max of uint256 
     uint public constant MAX_SUPPLY = MAX;          // max mintable count
-    uint public constant PRICE = 0.01 ether;  // $10 USD , price per each nft mint
-    uint public constant MAX_PER_MINT = 1;    // allow to mint one of NFT at one time
+    uint public constant PRICE = 0.01 ether;        // $10 USD , price per each nft mint
+    uint public constant MAX_PER_MINT = 1;          // allow to mint one of NFT at one time
 
     struct Stamp {
-        uint level;     // lowest level = 1 , max =8
-        string image;
+        uint level;                                 // lowest level = 1 , max =8
+        string image;                               // changable image url
     }
 
     mapping(uint256 => Stamp) private _properties;
@@ -119,12 +117,9 @@ contract StampNFT is ERC721Enumerable, Ownable {
         uint totalMinted = _tokenIds.current();
 
         require(totalMinted.add(1) <= MAX_SUPPLY, "Not enough NFTs left!");
-        // require(_count >0 && _count <= MAX_PER_MINT, "Cannot mint specified number of NFTs.");
         require(msg.value >= PRICE, "Not enough ether to purchase NFTs.");
 
-        // for (uint i = 0; i < _count; i++) {
-            _mintSingleNFT();
-        // }
+        _mintSingleNFT();
     }
 
     /// @dev function to mint one of NFT

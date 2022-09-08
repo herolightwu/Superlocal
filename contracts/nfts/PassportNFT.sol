@@ -1,11 +1,5 @@
 // SPDX-License-Identifier: ISC
 
-
-
-
-
-
-
 pragma solidity ^0.8.1;
 
 import "@openzeppelin/contracts/utils/Counters.sol";
@@ -114,7 +108,7 @@ contract PassportNFT is ERC721Enumerable, Ownable {
         require(msg.value >= _fiat_fee[new_level], "Not enough ether to level up passport");
 
         /// check the amount of user's local token
-        ///  calculate the needed amount to level up 
+        /// calculate the needed amount to level up 
         uint256 half_level = cur_level.div(2);
         uint256 local_amount = cur_level.add(cur_level**2).add(2**half_level);
         local_amount = local_amount.mul(50);
@@ -170,7 +164,6 @@ contract PassportNFT is ERC721Enumerable, Ownable {
             if (_properties[_tokenid].stamp_arr[i] == _stampId){
                 return true;
             }
-
         }
         return false;
     }

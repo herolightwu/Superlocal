@@ -18,6 +18,17 @@ yarn hardhat test
 
 ```
 
+
+To deploy the contracts on local network, please run the following script:
+
+```shell
+npx hardhat help
+yarn hardhat node
+yarn hardhat run --network localhost scripts/deploy.ts
+
+```
+
+
 To deploy the contracts on Mainnet or Rinkeby, please create the ".env" file and edit the keys.
 ".env" file should be created based on ".env.example" file.
 To get the needed keys, please go to 'alchemyapi.io' and 'etherscan.io' site, and create the account and the app, and then get the key.

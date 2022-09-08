@@ -1,23 +1,46 @@
+import yellow from 'chalk';
+import underline from 'chalk';
 import { ethers } from "hardhat";
 
-async function main() {
-  const currentTimestampInSeconds = Math.round(Date.now() / 1000);
-  const ONE_YEAR_IN_SECS = 365 * 24 * 60 * 60;
-  const unlockTime = currentTimestampInSeconds + ONE_YEAR_IN_SECS;
+/**
+ * @usage yarn hardhat node
+ * @usage yarn hardhat run --network localhost scripts/deploy.ts
+ */
+ async function main() {
+  const [deployer] = await ethers.getSigners();
 
-  const lockedAmount = ethers.utils.parseEther("1");
+  // --- BSC
+  console.log(`\n ${yellow(underline('ETH'))}`);
+    // deploy Mayorship
+    const mayorFactory = await ethers.getContractFactory("Mayorship");
+    const mayorship = await mayorFactory.deploy("");
+    await mayorship.connect(deployer.address).deployed();
+    console.log('Mayorship NFT : ', mayorship.address);
+    // deploy Stamp
+    const randomFactory = await ethers.getContractFactory("Randomness");
+    const randomless = await randomFactory.deploy();
+    await randomless.connect(deployer.address).deployed();
 
-  const Lock = await ethers.getContractFactory("Lock");
-  const lock = await Lock.deploy(unlockTime, { value: lockedAmount });
-
-  await lock.deployed();
-
-  console.log("Lock with 1 ETH deployed to:", lock.address);
+    const stampFactory = await ethers.getContractFactory("StampNFT");
+    const stamp = await stampFactory.deploy("", randomless.address);
+    await stamp.connect(deployer).deployed();
+    console.log('Stamp NFT : ', stamp.address);
+    // deploy Local token
+    const localFactory = await ethers.getContractFactory("Local");
+    const local = await localFactory.deploy();
+    await local.connect(deployer).deployed();
+    await local.connect(deployer).enableTrading();
+    console.log('Local Token : ', local.address);
+    // deploy Passport
+    const passportFactory = await ethers.getContractFactory("PassportNFT");
+    const passport = await passportFactory.deploy("", stamp.address, local.address);
+    await passport.connect(deployer).deployed(); 
+    console.log('Passport NFT : ', passport.address);
 }
 
-// We recommend this pattern to be able to use async/await everywhere
-// and properly handle errors.
-main().catch((error) => {
-  console.error(error);
-  process.exitCode = 1;
-});
+main()
+  .then(() => process.exit(0))
+  .catch((error) => {
+    console.error(error);
+    process.exit(1);
+  });
