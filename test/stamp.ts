@@ -1,30 +1,21 @@
-import { expect, util } from "chai";
-import { BigNumber, utils } from 'ethers';
+import { expect } from "chai";
+import { utils } from 'ethers';
 import { ethers, waffle } from "hardhat";
 import { SignerWithAddress } from '@nomiclabs/hardhat-ethers/signers';
-import { MockContract } from 'ethereum-waffle';
-
-import MockRandomABI from '../artifacts/contracts/Randomness.sol/Randomness.json';
-const { deployMockContract } = waffle;
 
 describe("StampNFT", function () {
     let owner!: SignerWithAddress;
     let holder!: SignerWithAddress;
     let externalUser!: SignerWithAddress;
     let contract!: any;
-    let mockRandom: MockContract;
 
     before(async function () {
         [owner, holder, externalUser] = await ethers.getSigners();
     }); 
 
     it('Contract deployment', async function () {
-      mockRandom = await deployMockContract(owner, MockRandomABI.abi);
-
       const contractFactory = await ethers.getContractFactory("StampNFT");
-      contract = await contractFactory.deploy(
-          "", mockRandom.address
-      );
+      contract = await contractFactory.deploy("");
 
       await contract.connect(owner.address).deployed();
     }); 
@@ -39,19 +30,19 @@ describe("StampNFT", function () {
     }); 
 
     it('Mint and check level', async function () {
-      await mockRandom.mock.getRandom.returns(5);
       await expect(contract.connect(holder).mint({ value: utils.parseUnits('1', 14) })).to.be.revertedWith('Not enough ether to purchase NFTs.');
       await expect(contract.connect(holder).mint({ value: utils.parseUnits('1', 16) })).to.be.emit(contract, 'Mint');
-      await mockRandom.mock.getRandom.returns(3);
       await expect(contract.connect(externalUser).mint({ value: utils.parseUnits('1', 14) })).to.be.revertedWith('Not enough ether to purchase NFTs.');
       await expect(contract.connect(externalUser).mint({ value: utils.parseUnits('1', 16) })).to.be.emit(contract, 'Mint');
-      await mockRandom.mock.getRandom.returns(6);
       await expect(contract.connect(owner).reserveMint()).to.be.emit(contract, 'Mint');
       await expect(contract.connect(owner).reserveMint()).to.be.emit(contract, 'Mint');
 
-      expect(await contract.getStampLevel(0)).to.be.equal(6);
-      expect(await contract.getStampLevel(1)).to.be.equal(4);
-      expect(await contract.getStampLevel(2)).to.be.equal(7);
+      let level = await contract.getStampLevel(0);
+      console.log ("stamp 0 level : ", level);
+      level = await contract.getStampLevel(1);
+      console.log ("stamp 1 level : ", level);
+      level = await contract.getStampLevel(2);
+      console.log ("stamp 2 level : ", level);
     });
 
     it('Check balance and token IDs', async function () {

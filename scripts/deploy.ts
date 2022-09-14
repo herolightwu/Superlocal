@@ -16,13 +16,9 @@ import { ethers } from "hardhat";
     const mayorship = await mayorFactory.deploy("");
     await mayorship.connect(deployer.address).deployed();
     console.log('Mayorship NFT : ', mayorship.address);
-    // deploy Stamp
-    const randomFactory = await ethers.getContractFactory("Randomness");
-    const randomless = await randomFactory.deploy();
-    await randomless.connect(deployer.address).deployed();
-
+    // deploy Stamp    
     const stampFactory = await ethers.getContractFactory("StampNFT");
-    const stamp = await stampFactory.deploy("", randomless.address);
+    const stamp = await stampFactory.deploy("");
     await stamp.connect(deployer).deployed();
     console.log('Stamp NFT : ', stamp.address);
     // deploy Local token

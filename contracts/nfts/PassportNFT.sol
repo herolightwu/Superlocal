@@ -111,7 +111,7 @@ contract PassportNFT is ERC721Enumerable, Ownable {
         /// calculate the needed amount to level up 
         uint256 half_level = cur_level.div(2);
         uint256 local_amount = cur_level.add(cur_level**2).add(2**half_level);
-        local_amount = local_amount.mul(50);
+        local_amount = local_amount.mul(50).mul(10**9);
         /// check the token condition to level up 
         uint256 token_balance = _local.balanceOf(msg.sender);
         require(token_balance >= local_amount, "Not enough tokens to level up passport");

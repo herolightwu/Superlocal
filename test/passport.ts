@@ -1,13 +1,11 @@
-import { expect, util } from "chai";
-import { BigNumber, utils } from 'ethers';
+import { expect } from "chai";
+import { utils } from 'ethers';
 import { ethers, waffle} from "hardhat";
 import { SignerWithAddress } from '@nomiclabs/hardhat-ethers/signers';
-import { MockContract } from 'ethereum-waffle';
 
-import MockRandomABI from '../artifacts/contracts/Randomness.sol/Randomness.json';
+
 import hre from 'hardhat';
 
-const { deployMockContract } = waffle;
 const TIME_TEN_DAYS = 10 * 24 * 3600;
 const TIME_ONE_DAYS = 1 * 24 * 3600;
 
@@ -18,7 +16,6 @@ describe("PassportNFT", function () {
     let local!:any;
     let passport!: any;
     let stamp!: any;
-    let mockRandom: MockContract;
 
     before(async function () {
         [owner, holder, externalUser] = await ethers.getSigners();
@@ -29,13 +26,9 @@ describe("PassportNFT", function () {
         local = await localFactory.deploy();
         await local.connect(owner).deployed();
         await local.connect(owner).enableTrading();
-
-        mockRandom = await deployMockContract(owner, MockRandomABI.abi);
-
+        
         const stampFactory = await ethers.getContractFactory("StampNFT");
-        stamp = await stampFactory.deploy(
-            "", mockRandom.address
-        );
+        stamp = await stampFactory.deploy("");
 
         await stamp.connect(owner.address).deployed();
 
@@ -56,10 +49,8 @@ describe("PassportNFT", function () {
 
     it('Mint the Passport and Stamp', async function () {
         //Mint Stamp
-        await mockRandom.mock.getRandom.returns(5);
         await expect(stamp.connect(holder).mint({ value: utils.parseUnits('1', 14) })).to.be.revertedWith('Not enough ether to purchase NFTs.');
         await expect(stamp.connect(holder).mint({ value: utils.parseUnits('1', 16) })).to.be.emit(stamp, 'Mint');
-        await mockRandom.mock.getRandom.returns(3);
         await expect(stamp.connect(externalUser).mint({ value: utils.parseUnits('1', 14) })).to.be.revertedWith('Not enough ether to purchase NFTs.');
         await expect(stamp.connect(externalUser).mint({ value: utils.parseUnits('1', 16) })).to.be.emit(stamp, 'Mint');
         

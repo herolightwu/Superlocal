@@ -19,12 +19,8 @@ const func: DeployFunction = async function (hre: HardhatRuntimeEnvironment) {
     await mayorship.connect(deployer.address).deployed();
     console.log('Mayorship NFT : ', mayorship.address);
     // deploy Stamp
-    const randomFactory = await hre.ethers.getContractFactory("Randomness");
-    const randomless = await randomFactory.deploy();
-    await randomless.connect(deployer.address).deployed();
-
     const stampFactory = await hre.ethers.getContractFactory("StampNFT");
-    const stamp = await stampFactory.deploy("", randomless.address);
+    const stamp = await stampFactory.deploy("");
     await stamp.connect(deployer).deployed();
     console.log('Stamp NFT : ', stamp.address);
     // deploy Local token
@@ -35,7 +31,7 @@ const func: DeployFunction = async function (hre: HardhatRuntimeEnvironment) {
     console.log('Local Token : ', local.address);
     // deploy Passport
     const passportFactory = await hre.ethers.getContractFactory("PassportNFT");
-    const passport = await passportFactory.deploy("", stamp.address, local.address);
+    const passport = await passportFactory.deploy("", stamp.address, local.address);    
     await passport.connect(deployer).deployed(); 
     console.log('Passport NFT : ', passport.address);
   }
@@ -50,12 +46,8 @@ const func: DeployFunction = async function (hre: HardhatRuntimeEnvironment) {
     await mayorship.deployed();
     console.log('Mayorship NFT : ', mayorship.address);
     // deploy Stamp
-    const randomFactory = await hre.ethers.getContractFactory("Randomness");
-    const randomless = await randomFactory.deploy();
-    await randomless.deployed();
-
     const stampFactory = await hre.ethers.getContractFactory("StampNFT");
-    const stamp = await stampFactory.deploy("", randomless.address);
+    const stamp = await stampFactory.deploy("");
     await stamp.deployed();
     console.log('Stamp NFT : ', stamp.address);
     // deploy Local token

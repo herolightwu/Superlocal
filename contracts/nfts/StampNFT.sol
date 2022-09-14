@@ -8,7 +8,6 @@ import "@openzeppelin/contracts/utils/math/SafeMath.sol";
 import "@openzeppelin/contracts/utils/Strings.sol"; 
 import "@openzeppelin/contracts/token/ERC721/extensions/ERC721Enumerable.sol";
 import "hardhat/console.sol";
-import "../interfaces/IRandomness.sol";
 
 contract StampNFT is ERC721Enumerable, Ownable {
     using SafeMath for uint256;
@@ -30,8 +29,6 @@ contract StampNFT is ERC721Enumerable, Ownable {
     mapping(uint256 => Stamp) private _properties;
     mapping(uint => string) private _level;         // level name for each level
 
-    IRandomness _rn;
-
     string public baseTokenURI;
     string public _contractURI;
     string private hiddenMetadataUri = "";
@@ -41,10 +38,8 @@ contract StampNFT is ERC721Enumerable, Ownable {
     /// @dev
     event Mint(address);
 
-    constructor(string memory baseURI, address rn) ERC721("StampNFT", "STAMPNFT") {
+    constructor(string memory baseURI) ERC721("StampNFT", "STAMPNFT") {
         setBaseURI(baseURI);
-
-        _rn = IRandomness(rn);
 
         // initialize _level
         _level[1] = "Red";
@@ -57,6 +52,15 @@ contract StampNFT is ERC721Enumerable, Ownable {
         _level[8] = "Rainbow";
 
     }
+
+    /// @dev get the random number (1~8)
+    function random() private view returns (uint) {
+        uint256 seed = uint256(keccak256(abi.encodePacked(block.timestamp + block.difficulty +
+                        ((uint256(keccak256(abi.encodePacked(block.coinbase)))) / block.timestamp) + block.gaslimit + 
+                        ((uint256(keccak256(abi.encodePacked(msg.sender)))) / block.timestamp) + block.number)));
+
+        return (seed - ((seed / 8) * 8)) + 1;
+    } 
 
     /// @dev Return the level of the Stamp by StampNFT id
     /// @param _tokenId Token ID of the StampNFT
@@ -129,7 +133,7 @@ contract StampNFT is ERC721Enumerable, Ownable {
         _tokenIds.increment();
 
         // get the stamp level randomly
-        uint slevel = uint(_rn.getRandom(newTokenID) % 8) + 1;
+        uint slevel = random();
         _properties[newTokenID] = Stamp(slevel, "");
         emit Mint(msg.sender);
     }
