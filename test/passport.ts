@@ -55,9 +55,9 @@ describe("PassportNFT", function () {
         await expect(stamp.connect(externalUser).mint({ value: utils.parseUnits('1', 16) })).to.be.emit(stamp, 'Mint');
         
         //Mint Passport
-        await expect(passport.connect(holder).mint({ value: utils.parseUnits('1', 14) })).to.be.revertedWith('Not enough ether to purchase NFTs.');
+        await expect(passport.connect(holder).mint({ value: utils.parseUnits('1', 14) })).to.be.revertedWith('Not enough Ether');
         await expect(passport.connect(holder).mint({ value: utils.parseUnits('25', 15) })).to.be.emit(passport, 'Mint');
-        await expect(passport.connect(externalUser).mint({ value: utils.parseUnits('1', 14) })).to.be.revertedWith('Not enough ether to purchase NFTs.');
+        await expect(passport.connect(externalUser).mint({ value: utils.parseUnits('1', 14) })).to.be.revertedWith('Not enough Ether');
         await expect(passport.connect(externalUser).mint({ value: utils.parseUnits('25', 15) })).to.be.emit(passport, 'Mint');
 
         await expect(passport.connect(owner).reserveMint()).to.be.emit(passport, 'Mint');
@@ -75,16 +75,16 @@ describe("PassportNFT", function () {
 
     it('Apply Stamp to Passport', async function () {
         await expect(passport.connect(owner).setStamp(0, 3)).to.be.revertedWith("ERC721: invalid token ID");
-        await expect(passport.connect(owner).setStamp(0, 1)).to.be.revertedWith("Passport and Stamp has difference holders");
-        await expect(passport.connect(owner).setStamp(0, 0)).to.be.emit(passport, "StampApplied");
-        await expect(passport.connect(owner).setStamp(1, 1)).to.be.emit(passport, "StampApplied");            
+        await expect(passport.connect(owner).setStamp(0, 1)).to.be.revertedWith("Difference holders");
+        await expect(passport.connect(holder).setStamp(0, 0)).to.be.emit(passport, "StampApplied");
+        await expect(passport.connect(externalUser).setStamp(1, 1)).to.be.emit(passport, "StampApplied");            
     }); 
     
     it('Check level functions', async function () {
         // level up to 1 level
         expect(await passport.getPassportLevel(0)).to.equal(0);
         expect(await passport.getAppliedStampCount(0)).to.equal(1);
-        await expect(passport.connect(holder).levelUpPassport(0, {value : utils.parseUnits('0', 14)})).to.be.revertedWith("Not enough tokens to level up passport");
+        await expect(passport.connect(holder).levelUpPassport(0, {value : utils.parseUnits('0', 14)})).to.be.revertedWith("Not enough tokens");
         // mint local token to levelup the passport of holder
         const amount = utils.parseUnits('200', 9);
         expect(await local.connect(holder).mint(amount, { value: utils.parseUnits('200', 14) })).to.be.emit(local, 'Mint');
@@ -97,10 +97,10 @@ describe("PassportNFT", function () {
         // mint stamp
         await expect(stamp.connect(holder).mint({ value: utils.parseUnits('1', 16) })).to.be.emit(stamp, 'Mint');
         
-        await expect(passport.connect(owner).setStamp(0, 2)).to.be.emit(passport, "StampApplied");
+        await expect(passport.connect(holder).setStamp(0, 2)).to.be.emit(passport, "StampApplied");
         expect(await passport.getAppliedStampCount(0)).to.equal(2);
         // level up to 2 level
-        await expect(passport.connect(holder).levelUpPassport(0, {value : utils.parseUnits('1', 15)})).to.be.revertedWith('Not enough ether to level up passport');
+        await expect(passport.connect(holder).levelUpPassport(0, {value : utils.parseUnits('1', 15)})).to.be.revertedWith('Not enough Ether');
         await expect(passport.connect(externalUser).levelUpPassport(0, {value : utils.parseUnits('25', 15)})).to.be.revertedWith('Holder only can level up');
         await expect(passport.connect(holder).levelUpPassport(0, {value : utils.parseUnits('25', 15)})).to.be.emit(passport, 'LevelUpPassport');
         expect(await passport.getPassportLevel(0)).to.equal(2);

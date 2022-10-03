@@ -105,7 +105,7 @@ contract PassportNFT is ERC721Enumerable, Ownable {
         uint cur_level = _properties[_tokenId].level;
         uint new_level = cur_level.add(1);        
         require(_properties[_tokenId].stamp_arr.length >= new_level, "Applied stamps does not enough");
-        require(msg.value >= _fiat_fee[new_level], "Not enough ether to level up passport");
+        require(msg.value >= _fiat_fee[new_level], "Not enough Ether");
 
         /// check the amount of user's local token
         /// calculate the needed amount to level up 
@@ -114,7 +114,7 @@ contract PassportNFT is ERC721Enumerable, Ownable {
         local_amount = local_amount.mul(50).mul(10**9);
         /// check the token condition to level up 
         uint256 token_balance = _local.balanceOf(msg.sender);
-        require(token_balance >= local_amount, "Not enough tokens to level up passport");
+        require(token_balance >= local_amount, "Not enough tokens");
         
         _local.transferFrom(msg.sender, address(_local), local_amount);
 
@@ -135,7 +135,7 @@ contract PassportNFT is ERC721Enumerable, Ownable {
     /// @param _luck    new luck value (0..100) of the Passport
     function setPassportLuck(uint256 _tokenId, uint _luck) public onlyOwner{
         require(_properties[_tokenId].renewal >= block.timestamp, "Passport expired");
-        require( _luck >= 0  && _luck <= 100, "Luck value is bigger than 0, smaller than 100");
+        require( _luck >= 0  && _luck <= 100, "Luck value is from 0 to 100");
         _properties[_tokenId].luck = _luck;
     }
 
@@ -148,11 +148,12 @@ contract PassportNFT is ERC721Enumerable, Ownable {
     /// @dev apply Stamp NFT to passport
     /// @param _tokenId Token ID of the Passport
     /// @param _stampId Token ID of the Stamp
-    function setStamp(uint256 _tokenId, uint256 _stampId) public onlyOwner {
+    function setStamp(uint256 _tokenId, uint256 _stampId) public {
         require(_properties[_tokenId].stamp_arr.length < _maxApplyStamp, "Applied Stamp amount is exceed.");
         
         require(ownerOf(_tokenId) != address(0) && _stamp.ownerOf(_stampId) != address(0), "Holders does not exist");
-        require(ownerOf(_tokenId) == _stamp.ownerOf(_stampId), "Passport and Stamp has difference holders");
+        require(ownerOf(_tokenId) == _stamp.ownerOf(_stampId), "Difference holders");
+        require(ownerOf(_tokenId) == msg.sender, "Not holder of this passport");
         require(checkAppliedStamp(_tokenId, _stampId) == false, "Stamp was applied already");
         _properties[_tokenId].stamp_arr.push(_stampId);
 
@@ -249,7 +250,7 @@ contract PassportNFT is ERC721Enumerable, Ownable {
         uint totalMinted = _tokenIds.current();
 
         require(totalMinted.add(1) <= MAX_SUPPLY, "Not enough NFTs left!");
-        require(msg.value >= PRICE, "Not enough ether to purchase NFTs.");
+        require(msg.value >= PRICE, "Not enough Ether");
 
         _mintSingleNFT();
     }

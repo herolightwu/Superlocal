@@ -31,7 +31,8 @@ const func: DeployFunction = async function (hre: HardhatRuntimeEnvironment) {
     console.log('Local Token : ', local.address);
     // deploy Passport
     const passportFactory = await hre.ethers.getContractFactory("PassportNFT");
-    const passport = await passportFactory.deploy("", stamp.address, local.address);    
+    const passport = await passportFactory.deploy("", stamp.address, local.address);
+    // const passport = await passportFactory.deploy("", "0x49565f524b0d40114e3E6100177BBD8EdFc0e088", "0x3b096dcf4de9eafC01014d5D243802bA7E10C52A");    
     await passport.connect(deployer).deployed(); 
     console.log('Passport NFT : ', passport.address);
   }
